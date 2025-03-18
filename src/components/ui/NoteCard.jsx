@@ -11,8 +11,8 @@ function NoteCard({ title, content, date, onEdit, onDelete }) {
       <p className="text-xs text-slate-600 mt-2">{content?.slice(0, 60)}</p>
 
       <div className="flex items-center justify-end gap-2 mt-2">
-        <FilePen onClick={onEdit} className="icon-btn hover:text-yellow-600" />
-        <Trash onClick={onDelete} className="icon-btn hover:text-yellow-600" />
+        <FilePen onClick={onEdit} className="icon-btn hover:text-yellow-400" />
+        <Trash onClick={onDelete} className="icon-btn hover:text-yellow-400" />
       </div>
     </div>
   );

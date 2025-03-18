@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import MainLayout from "../components/layout/MainLayout";
 import NoteCard from "../components/ui/NoteCard";
-import NoteForm from "../components/ui/NoteForm";
 import axiosInstance from "../utils/axios";
 import { toast } from "react-hot-toast";
 import AddEditNotes from "../components/ui/AddEditNotes";
@@ -34,6 +33,14 @@ function HomePage() {
     setNotes((prevNotes) => [...prevNotes, updatedNote]);
   };
 
+  const handleNoteEdit = (updatedNote) => {
+    setNotes((prevNotes) =>
+      prevNotes.map((note) =>
+        note._id === updatedNote._id ? updatedNote : note
+      )
+    );
+  };
+
   const handleDelete = async (noteId) => {
     try {
       await axiosInstance.delete(`/notes/${noteId}`); // Fetch from backend
@@ -45,26 +52,11 @@ function HomePage() {
     }
   };
 
-  // const handleEdit = async (updatedNote) => {
-  //   try {
-  //     await axiosInstance.put(`/notes/${updatedNote._id}`, updatedNote); // Fetch from backend
-  //     setNotes((prevNotes) =>
-  //       prevNotes.map((note) =>
-  //         note._id === updatedNote._id ? updatedNote : note
-  //       )
-  //     );
-  //     toast.success("Note updated successfully");
-  //   } catch (error) {
-  //     console.error("Error updating note:", error);
-  //     toast.error("Failed to update note");
-  //   }
-  // };
-
   useEffect(() => {
     fetchNotes();
   }, []);
 
-  const handleEdit = (noteData) => {
+  const handleEditClick = (noteData) => {
     setOpenAddEditModal({ isShown: true, type: "edit", data: noteData });
   };
 
@@ -81,7 +73,7 @@ function HomePage() {
                   content={note.content}
                   date={new Date(note.createdAt).toLocaleDateString()}
                   onDelete={() => handleDelete(note._id)}
-                  onEdit={() => handleEdit(note)}
+                  onEdit={() => handleEditClick(note)}
                 />
               ))
             ) : (
@@ -120,6 +112,7 @@ function HomePage() {
             setOpenAddEditModal({ isShown: false, type: "add", data: null });
           }}
           onNoteAdd={handleNoteAdd}
+          onNoteEdit={handleNoteEdit}
           type={openAddEditModal.type}
           noteData={openAddEditModal.data}
         />

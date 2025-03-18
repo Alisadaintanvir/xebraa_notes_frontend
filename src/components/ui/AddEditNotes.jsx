@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import axiosInstance from "../../utils/axios";
 import toast from "react-hot-toast";
 
-function AddEditNotes({ onClose, onNoteAdd, noteData, type }) {
+function AddEditNotes({ onClose, onNoteAdd, onNoteEdit, noteData, type }) {
   const {
     register,
     handleSubmit,
@@ -28,6 +28,24 @@ function AddEditNotes({ onClose, onNoteAdd, noteData, type }) {
     }
   };
 
+  const handleUpdateNote = async (data) => {
+    try {
+      const response = await axiosInstance.patch(
+        `/notes/${noteData._id}`,
+        data
+      );
+      const updateNoteData = response.data.note;
+      if (response.status == 200) {
+        onNoteEdit(updateNoteData);
+        toast.success("Note Updated Successfully");
+        onClose();
+      }
+    } catch (error) {
+      toast.error("Something went wrong. Please try again.");
+      console.error("Error fetching notes:", error);
+    }
+  };
+
   return (
     <div>
       <div className="relative">
@@ -39,7 +57,11 @@ function AddEditNotes({ onClose, onNoteAdd, noteData, type }) {
         </button>
       </div>
       <div>
-        <form onSubmit={handleSubmit(handleCreateNote)}>
+        <form
+          onSubmit={handleSubmit(
+            type == "add" ? handleCreateNote : handleUpdateNote
+          )}
+        >
           <div className="flex flex-col gap-2 mt-2">
             <label htmlFor="" className="input-label">
               Title
@@ -70,9 +92,7 @@ function AddEditNotes({ onClose, onNoteAdd, noteData, type }) {
           </div>
 
           <button
-            className={`w-full p-4 bg-yellow-400 hover:bg-yellow-500 text-white flex items-center justify-center rounded-2xl cursor-pointer mt-4 ${
-              type == "edit" && "hidden"
-            }`}
+            className={`w-full p-4 bg-yellow-400 hover:bg-yellow-500 text-white flex items-center justify-center rounded-2xl cursor-pointer mt-4 `}
             type="submit"
           >
             Add

@@ -33,7 +33,7 @@ function LogoutButton() {
   return (
     <button
       onClick={handleLogout}
-      className="text-red-500 bg-gray-100 shadow-sm p-2 rounded-full hover:cursor-pointer hover:bg-gray-200"
+      className="text-yellow-400 bg-gray-100 shadow-sm p-2 rounded-full hover:cursor-pointer hover:bg-gray-200"
     >
       <LogOut size={16} />
     </button>
