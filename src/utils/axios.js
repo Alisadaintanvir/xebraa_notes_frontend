@@ -1,53 +1,53 @@
 // src/utils/axios.js
 import axios from "axios";
-import useAuthStore from "../store/authStore"; // Import the Zustand store
+import useAuthStore from "../store/authStore"; // Zustand store
 import API_CONFIG from "./apiConstants";
 
 const BASE_URL = API_CONFIG.API_ENDPOINT;
 const axiosInstance = axios.create({
   baseURL: `${BASE_URL}/v1`,
-  withCredentials: true, // Send cookies with the request
+  withCredentials: true, // cookies for refreshToken
 });
 
-// Request Interceptor: Attach token to each request
-axiosInstance.interceptors.request.use(
-  (config) => {
-    const accessToken = useAuthStore.getState().accessToken; // Get the current access token
-    if (accessToken) {
-      config.headers["Authorization"] = `Bearer ${accessToken}`; // Set the Authorization header
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
+// Add request interceptor to add accessToken
+axiosInstance.interceptors.request.use((config) => {
+  const { accessToken } = useAuthStore.getState();
+  if (accessToken) {
+    config.headers.Authorization = `Bearer ${accessToken}`;
   }
-);
+  return config;
+});
 
+// Add response interceptor to handle 401 errors and refresh tokens
 axiosInstance.interceptors.response.use(
-  (response) => response, // If response is OK, return it
+  (response) => response,
   async (error) => {
-    const { status } = error.response || {};
-    if (status === 401) {
-      // Access token expired, try refreshing
+    const originalRequest = error.config;
+    const { setAccessToken } = useAuthStore.getState();
+
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
       try {
-        const refreshResponse = await axios.post(
-          "/v1/auth/refresh-token", // Your backend refresh token route
-          {},
-          { withCredentials: true }
-        );
-        const { accessToken } = refreshResponse.data;
+        // Request a new access token using refresh token from cookies
+        const response = await axios.get(`${BASE_URL}/v1/auth/refresh-token`, {
+          withCredentials: true,
+        });
 
-        // Store the new access token in memory using Zustand
-        useAuthStore.getState().setAccessToken(accessToken);
+        const newAccessToken = response.data.accessToken;
 
-        // Retry the original request with the new access token
-        error.config.headers["Authorization"] = `Bearer ${accessToken}`;
-        return axiosInstance(error.config); // Retry the failed request
+        // Store new access token in Zustand store
+        setAccessToken(newAccessToken);
+
+        // Update the authorization header and retry original request
+        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+        return axiosInstance(originalRequest);
       } catch (refreshError) {
-        console.error("Refresh token failed", refreshError);
-        // Handle token refresh failure, e.g., logout user
+        console.error("Refresh token failed:", refreshError);
+        // Optional: logout or redirect to login
+        return Promise.reject(refreshError);
       }
     }
+
     return Promise.reject(error);
   }
 );

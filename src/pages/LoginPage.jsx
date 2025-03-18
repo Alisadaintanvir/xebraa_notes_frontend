@@ -4,11 +4,12 @@ import axios from "axios";
 import API_CONFIG from "../utils/apiConstants";
 import { toast } from "react-hot-toast";
 import useAuthStore from "../store/authStore";
+import { checkLoginStatus } from "../utils/checkLoginStatus";
 
 const BASE_URL = API_CONFIG.API_ENDPOINT;
 
 function LoginPage() {
-  const { setAccessToken, setIsLoggedIn } = useAuthStore();
+  const { setAccessToken, setIsLoggedIn, setUser } = useAuthStore();
   const navigate = useNavigate();
   const onSubmit = async (data) => {
     try {
@@ -25,9 +26,10 @@ function LoginPage() {
       );
 
       if (response.status === 200) {
-        const { accessToken } = response.data;
+        const { accessToken, user } = response.data;
         setAccessToken(accessToken);
         setIsLoggedIn(true);
+        setUser(user);
         toast.success("Login successful");
         navigate("/");
       }
@@ -58,10 +60,11 @@ function LoginPage() {
           Don't have an account?
           <Link
             to="/signup"
-            className="text-indigo-600 hover:text-indigo-500 font-medium"
+            className="text-slate-700 hover:text-slate-900 font-medium"
           >
             Sign up
           </Link>
+          <button onClick={() => checkLoginStatus()}>Click</button>
         </div>
       </div>
     </div>
