@@ -4,7 +4,6 @@ import axios from "axios";
 import API_CONFIG from "../utils/apiConstants";
 import { toast } from "react-hot-toast";
 import useAuthStore from "../store/authStore";
-import { checkLoginStatus } from "../utils/checkLoginStatus";
 
 const BASE_URL = API_CONFIG.API_ENDPOINT;
 
