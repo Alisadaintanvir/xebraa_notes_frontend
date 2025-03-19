@@ -59,7 +59,7 @@ function LoginPage() {
           Don't have an account?
           <Link
             to="/signup"
-            className="text-slate-700 hover:text-slate-900 font-medium"
+            className="text-yellow-400 hover:text-yellow-500 font-medium"
           >
             Sign up
           </Link>

@@ -47,7 +47,7 @@ function SignupPage() {
           Already have an account?
           <Link
             to="/login"
-            className="text-indigo-600 hover:text-indigo-500 font-medium"
+            className="text-yellow-400 hover:text-yellow-500 font-medium"
           >
             Sign In
           </Link>

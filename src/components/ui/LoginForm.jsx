@@ -47,12 +47,12 @@ function LoginForm({ onSubmit }) {
           />
           <span className="ml-2 text-sm text-gray-600">Remember me</span>
         </label>
-        <a href="#" className="text-sm text-indigo-600 hover:text-indigo-500">
+        <a href="#" className="text-sm text-yellow-600 hover:text-yellow-500">
           Forgot password?
         </a>
       </div>
 
-      <button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded-lg transition-colors hover:cursor-pointer">
+      <button className="w-full bg-yellow-400 hover:bg-yellow-500 text-white font-medium py-2.5 rounded-lg transition-colors hover:cursor-pointer">
         Sign In
       </button>
     </form>
