@@ -1,9 +1,14 @@
 import { useLocation, Navigate, Outlet } from "react-router-dom";
 import useAuthStore from "../../store/authStore";
+import Loading from "../ui/Loading";
 
 const ProtectedRoute = () => {
   const location = useLocation();
-  const { isLoggedIn } = useAuthStore();
+  const { isLoggedIn, isLoading } = useAuthStore();
+
+  if (isLoading) {
+    return <Loading />;
+  }
 
   return isLoggedIn ? (
     <Outlet />

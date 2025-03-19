@@ -6,9 +6,11 @@ import { toast } from "react-hot-toast";
 const BASE_URL = API_CONFIG.API_ENDPOINT;
 
 export const checkLoginStatus = async () => {
-  const { setAccessToken, setIsLoggedIn, setUser } = useAuthStore.getState();
+  const { setAccessToken, setIsLoggedIn, setUser, setIsLoading } =
+    useAuthStore.getState();
 
   try {
+    setIsLoading(true);
     const res = await axios.get(`${BASE_URL}/v1/auth/refresh-token`, {
       withCredentials: true,
     });
@@ -37,5 +39,7 @@ export const checkLoginStatus = async () => {
     setUser(null);
 
     return false; // failure
+  } finally {
+    setIsLoading(false);
   }
 };

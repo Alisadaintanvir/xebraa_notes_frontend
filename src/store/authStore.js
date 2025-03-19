@@ -7,6 +7,9 @@ const useAuthStore = create((set) => ({
   isLoggedIn: false,
   setIsLoggedIn: (loggedIn) => set({ isLoggedIn: loggedIn }),
 
+  isLoading: true,
+  setIsLoading: (loading) => set({ isLoading: loading }),
+
   user: null,
   setUser: (user) => set({ user }),
 }));
