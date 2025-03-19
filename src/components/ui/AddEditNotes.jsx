@@ -4,10 +4,14 @@ import { noteSchema } from "../../lib/validation/noteValidation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axiosInstance from "../../utils/axios";
 import toast from "react-hot-toast";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import socket from "../../utils/socket";
+import useAuthStore from "../../store/authStore";
 
-function AddEditNotes({ onClose, onNoteAdd, onNoteEdit, noteData, type }) {
+function AddEditNotes({ onClose, onNoteAdd, noteData, type }) {
+  const { user } = useAuthStore();
+  const [usersOnEdit, setUsersOnEdit] = useState([]);
+
   const {
     register,
     handleSubmit,
@@ -21,18 +25,25 @@ function AddEditNotes({ onClose, onNoteAdd, onNoteEdit, noteData, type }) {
   const title = watch("title");
   const content = watch("content");
 
+  // Join the note room when the component mounts
   useEffect(() => {
     if (noteData?._id) {
-      socket.emit("join-note", noteData._id);
+      socket.emit("join-note", noteData._id, user.email);
+      socket.on("users-in-room", (data) => {
+        setUsersOnEdit(data);
+      });
     }
 
     // Cleanup when the component unmounts
     return () => {
       if (noteData?._id) {
-        socket.emit("leave-note", noteData._id);
+        socket.emit("leave-note", noteData._id, user.email);
+        socket.on("users-in-room", (data) => {
+          setUsersOnEdit(data);
+        });
       }
     };
-  }, [noteData?._id]);
+  }, [noteData?._id, user.email]);
 
   // Listen for real-time updates from other users
   useEffect(() => {
@@ -48,6 +59,7 @@ function AddEditNotes({ onClose, onNoteAdd, onNoteEdit, noteData, type }) {
     };
   }, [setValue]);
 
+  // Send the changes to the server
   useEffect(() => {
     if (noteData?._id) {
       const changes = { title, content };
@@ -70,24 +82,6 @@ function AddEditNotes({ onClose, onNoteAdd, onNoteEdit, noteData, type }) {
     }
   };
 
-  const handleUpdateNote = async (data) => {
-    try {
-      const response = await axiosInstance.patch(
-        `/notes/${noteData._id}`,
-        data
-      );
-      const updateNoteData = response.data.note;
-      if (response.status == 200) {
-        onNoteEdit(updateNoteData);
-        toast.success("Note Updated Successfully");
-        onClose();
-      }
-    } catch (error) {
-      toast.error("Something went wrong. Please try again.");
-      console.error("Error fetching notes:", error);
-    }
-  };
-
   return (
     <div>
       <div className="relative">
@@ -99,11 +93,7 @@ function AddEditNotes({ onClose, onNoteAdd, onNoteEdit, noteData, type }) {
         </button>
       </div>
       <div>
-        <form
-          onSubmit={handleSubmit(
-            type == "add" ? handleCreateNote : handleUpdateNote
-          )}
-        >
+        <form onSubmit={handleSubmit(handleCreateNote)}>
           <div className="flex flex-col gap-2 mt-2">
             <label htmlFor="" className="input-label">
               Title
@@ -134,12 +124,35 @@ function AddEditNotes({ onClose, onNoteAdd, onNoteEdit, noteData, type }) {
           </div>
 
           <button
-            className={`w-full p-4 bg-yellow-400 hover:bg-yellow-500 text-white flex items-center justify-center rounded-2xl cursor-pointer mt-4 `}
+            className={`w-full p-4 bg-yellow-400 hover:bg-yellow-500 text-white flex items-center justify-center rounded-2xl cursor-pointer mt-4 ${
+              type == "edit" && "hidden"
+            }`}
             type="submit"
           >
             Add
           </button>
         </form>
+      </div>
+      <div>
+        <div className="flex items-center justify-center mt-4">
+          <p className="text-gray-600  text-sm ">
+            {usersOnEdit.filter((u) => u !== user.email).length > 0 && (
+              <span className="text-gray-600 text-sm w-full text-center mb-2">
+                Users in this note:
+              </span>
+            )}
+            {usersOnEdit
+              .filter((u) => u !== user.email)
+              .map((userEmail) => (
+                <span
+                  key={userEmail}
+                  className="text-white bg-green-500 text-xs rounded-md p-2 m-1"
+                >
+                  {userEmail}
+                </span>
+              ))}
+          </p>
+        </div>
       </div>
     </div>
   );

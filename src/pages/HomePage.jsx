@@ -6,6 +6,7 @@ import { toast } from "react-hot-toast";
 import AddEditNotes from "../components/ui/AddEditNotes";
 import Modal from "react-modal";
 import { Plus } from "lucide-react";
+
 function HomePage() {
   const [notes, setNotes] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -54,7 +55,7 @@ function HomePage() {
 
   useEffect(() => {
     fetchNotes();
-  }, []);
+  }, [openAddEditModal.isShown]);
 
   const handleEditClick = (noteData) => {
     setOpenAddEditModal({ isShown: true, type: "edit", data: noteData });
@@ -105,7 +106,7 @@ function HomePage() {
           },
         }}
         contentLabel=""
-        className="w-[50%] lg:w-[40%] max-h-3/4 bg-white rounded-md top-0 translate-y-[50%] p-5 overflow-scroll-y mx-auto"
+        className="w-[80%] md:w-[60%] lg:w-[40%] max-h-3/4 bg-white rounded-md top-0 translate-y-[50%] p-5 overflow-scroll-y mx-auto"
       >
         <AddEditNotes
           onClose={() => {
