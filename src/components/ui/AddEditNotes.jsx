@@ -4,14 +4,56 @@ import { noteSchema } from "../../lib/validation/noteValidation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axiosInstance from "../../utils/axios";
 import toast from "react-hot-toast";
+import { useEffect } from "react";
+import socket from "../../utils/socket";
 
 function AddEditNotes({ onClose, onNoteAdd, onNoteEdit, noteData, type }) {
   const {
     register,
     handleSubmit,
     reset,
+    watch,
+    setValue,
     formState: { errors },
   } = useForm({ resolver: zodResolver(noteSchema), defaultValues: noteData });
+
+  // Watch for changes in the form fields
+  const title = watch("title");
+  const content = watch("content");
+
+  useEffect(() => {
+    if (noteData?._id) {
+      socket.emit("join-note", noteData._id);
+    }
+
+    // Cleanup when the component unmounts
+    return () => {
+      if (noteData?._id) {
+        socket.emit("leave-note", noteData._id);
+      }
+    };
+  }, [noteData?._id]);
+
+  // Listen for real-time updates from other users
+  useEffect(() => {
+    socket.on("note-updated", (data) => {
+      const noteData = data.noteData;
+      setValue("title", noteData?.title);
+      setValue("content", noteData?.content);
+    });
+
+    // Cleanup the listener
+    return () => {
+      socket.off("note-updated");
+    };
+  }, [setValue]);
+
+  useEffect(() => {
+    if (noteData?._id) {
+      const changes = { title, content };
+      socket.emit("edit-note", noteData._id, changes);
+    }
+  }, [content, title, noteData?._id]);
 
   const handleCreateNote = async (data) => {
     try {

@@ -3,7 +3,9 @@ const isLocalhost =
   window.location.hostname === "localhost" ||
   window.location.hostname === "127.0.0.1";
 const API_CONFIG = {
-  API_ENDPOINT: isLocalhost ? "http://localhost:8000" : "",
+  API_ENDPOINT: isLocalhost
+    ? "http://localhost:8000"
+    : "https://xebraa-notes-backend.vercel.app",
   DOMAIN_URL: isLocalhost ? "http://localhost:5173" : "",
 };
 
