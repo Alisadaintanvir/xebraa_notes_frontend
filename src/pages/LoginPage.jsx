@@ -64,7 +64,6 @@ function LoginPage() {
           >
             Sign up
           </Link>
-          <button onClick={() => checkLoginStatus()}>Click</button>
         </div>
       </div>
     </div>
