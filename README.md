@@ -22,7 +22,10 @@ This is the frontend for a real-time note-taking application built with **React*
 
 - **User Authentication**: Register, login, and logout with JWT-based authentication.
 - **Note Management**: Create, read, update, and delete notes.
-- **Real-Time Collaboration**: Real-time updates and auto-saving using Socket.IO.
+- **Real-Time Collaboration**:
+  - **Live Editing**: Multiple users can edit the same note simultaneously. Changes made by one user are instantly visible to others in real-time.
+  - **Active User Tracking**: The list of users currently editing a note is displayed below the note edit modal.
+  - **Auto-Saving**: Changes are automatically saved to the database in real-time without requiring any manual save button.
 - **Responsive Design**: Built with TailwindCSS for a clean and responsive UI.
 - **State Management**: Zustand for global state management.
 - **Form Validation**: React Hook Form with Zod for robust form validation.
@@ -164,6 +167,8 @@ This function checks if the user is logged in by attempting to refresh the acces
    - If the refresh token is invalid or expired, the Zustand store is cleared.
    - The user is marked as logged out.
 
+---
+
 ## API Integration
 
 The app uses **Axios** for API requests. Key features include:
@@ -171,6 +176,8 @@ The app uses **Axios** for API requests. Key features include:
 - **Axios Interceptors**:
   - **Request Interceptor**: Adds the access token to the headers of every request.
   - **Response Interceptor**: Handles 401 errors by refreshing the access token and retrying the request.
+
+---
 
 ## Error Handling
 
@@ -201,4 +208,4 @@ Feel free to reach out if you have any questions or need further assistance! ðŸš
 
 ---
 
-This **README.md** provides a comprehensive overview of your React frontend project, including the authentication flow and step-by-step guide for `checkLoginStatus`. Let me know if you need further adjustments!
+This updated **README.md** highlights the real-time editing feature prominently in the **Features** section, ensuring visitors understand the app's capabilities at a glance. Let me know if you need further adjustments!
