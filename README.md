@@ -1,7 +1,3 @@
-Here’s a **README.md** for your React frontend project, including a detailed step-by-step guide for the authentication flow and how `checkLoginStatus` works:
-
----
-
 # Xebraa Notes - Real-Time Note App (Frontend)
 
 This is the frontend for a real-time note-taking application built with **React**, **TailwindCSS**, **Zustand**, and **Socket.IO**. It provides a user-friendly interface for authentication, note management, and real-time collaboration.
